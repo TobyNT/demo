@@ -1,0 +1,55 @@
+[
+  {
+    "id": "p-112020-1",
+    "type": "percentage",
+    "value": 10,
+    "expression": "[vc,mc]",
+    "max-discount": 50000,
+    "rules": [
+      {
+        "name": "Expiration",
+        "params": {
+          "validFrom": "2020-08-12",
+          "validTo": "2020-11-12"
+        }
+      }
+    ]
+  },
+  {
+    "id": "m-122020-1",
+    "type": "monetary",
+    "value": 10000,
+    "expression": "![vc, mc]",
+    "max-discount": null,
+    "rules": [
+      {
+        "name": "Expiration",
+        "params": {
+          "validFrom": "2020-08-12",
+          "validTo": "2020-12-12"
+        }
+      },
+      {
+        "name": "MinInvoiceSum",
+        "params": {
+          "value": 140000
+        }
+      }
+    ]
+  },
+  {
+    "id": "m-000000-2",
+    "type": "monetary",
+    "value": 10000,
+    "expression": "![vc, mc]",
+    "max-discount": null,
+    "rules": [
+      {
+        "name": "MinInvoiceSum",
+        "params": {
+          "value": 140000
+        }
+      }
+    ]
+  }
+]

@@ -5,11 +5,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.nxt.demo.model.Drink;
@@ -18,36 +24,13 @@ import com.nxt.demo.model.Size;
 
 @Service
 public class DrinkRepositoryImpl implements DrinkRepository {
-	private static final String RESOURCE_FILE = "static/drinkprice.properties";
-	private List<Drink> drinkList = new ArrayList<>();
-	private List<DrinkPrice> priceList = new ArrayList<>();
 
-//	{
-//		Drink drink;
-//		drink = new Drink("vietnamese coffee");
-//		drinkList.add(drink);
-//		priceList.add(new DrinkPrice(drink, Size.SMALL, 29000D));
-//
-//		drinkList.add(new Drink("vietnamese coffee with condensed milk"));
-//		drinkList.add(new Drink("vietnamese white coffee"));
-//
-//		drinkList.add(new Drink("americano"));
-//		drinkList.add(new Drink("cappuccino"));
-//		drinkList.add(new Drink("caramel macchiato"));
-//		drinkList.add(new Drink("espresso"));
-//		drinkList.add(new Drink("latte"));
-//		drinkList.add(new Drink("mocha"));
-//
-//		drinkList.add(new Drink("classic coldbrew"));
-//		drinkList.add(new Drink("coldbrew macchiato"));
-//		drinkList.add(new Drink("coldbrew with raspberry"));
-//
-//		drinkList.add(new Drink("peach tea mania"));
-//		drinkList.add(new Drink("oolong tea with lychee"));
-//
-//		drinkList.add(new Drink("jasmine tea macchiato"));
-//		drinkList.add(new Drink("black tea macchiato"));
-//	}
+	private static final Logger LOGGER = LoggerFactory.getLogger(DrinkRepositoryImpl.class);
+
+	private static final String RESOURCE_FILE = "static/drinkprice.properties";
+
+	private Map<String, Drink> drinkMap = new HashMap<>();
+	private Map<String, List<DrinkPrice>> priceMap = new HashMap<>();
 
 	public DrinkRepositoryImpl() throws IOException {
 		Properties props = loadFromFile();
@@ -80,13 +63,22 @@ public class DrinkRepositoryImpl implements DrinkRepository {
 					.collect(Collectors.toList());
 
 			for (String name : names) {
-				Drink drink = new Drink(name);
+				Drink drink = Drink.parse(name);
 
-				drinkList.add(drink);
+				Drink oldValue = drinkMap.put(drink.getShortName(), drink);
+				if (oldValue != null) {
+					LOGGER.warn("Drink short name duplicate found: %s", drink.getShortName());
+				}
+
+				List<DrinkPrice> prices = priceMap.get(drink.getShortName());
+				if (prices == null) {
+					prices = new ArrayList<>();
+					priceMap.put(drink.getShortName(), prices);
+				}
 
 				for (int i = 0; i < values.length; ++i) {
 					DrinkPrice drinkPrice = new DrinkPrice(drink, providedSizes.get(i), providedPrices.get(i));
-					priceList.add(drinkPrice);
+					prices.add(drinkPrice);
 				}
 			}
 		}
@@ -103,12 +95,39 @@ public class DrinkRepositoryImpl implements DrinkRepository {
 
 	@Override
 	public List<Drink> getAllDrinks() {
-		return new ArrayList<Drink>(drinkList);
+		return new ArrayList<Drink>(drinkMap.values());
 	}
 
 	@Override
 	public List<DrinkPrice> getAllPrices() {
-		return new ArrayList<DrinkPrice>(priceList);
+		return priceMap.values().stream().flatMap(l -> l.stream()).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Drink> findDrinkByShortName(String shortName) {
+		Drink drink = drinkMap.get(shortName);
+
+		if (drink == null) {
+			return Collections.emptyList();
+		}
+
+		List<Drink> list = new ArrayList<>();
+		list.add(drink);
+
+		return list;
+	}
+
+	@Override
+	public Optional<Drink> getDrinkByShortName(String shortName) {
+		Drink drink = drinkMap.get(shortName);
+
+		return Optional.ofNullable(drink);
+	}
+
+	public Optional<DrinkPrice> getPrice(String shortName, Size size) {
+		List<DrinkPrice> prices = priceMap.get(shortName);
+
+		return prices.stream().filter(price -> price.getSize() == size).findFirst();
 	}
 
 }
