@@ -35,15 +35,6 @@ public class BillingService {
 
 	private Map<String, VoucherProcessor> voucherProcessorMap = new HashMap<>();
 
-//	@PostConstruct
-//	private void postConstruct() {
-//		initVoucherProcessors();
-//	}
-//	
-//	void initVoucherProcessors() {
-//		List<Voucher> voucher
-//	}
-
 	public Invoice bill(List<String> items, List<String> voucherIds) {
 		Invoice invoice = new Invoice();
 		List<InvoiceItem> invoiceItems = createInvoiceItems(items);
