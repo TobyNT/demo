@@ -34,4 +34,8 @@ public class DrinkPrice {
 		this.size = size;
 		this.price = price;
 	}
+
+	public DrinkPrice(Drink drink, Size size) {
+		this(drink, size, 0D);
+	}
 }
