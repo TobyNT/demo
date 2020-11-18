@@ -9,6 +9,14 @@ public class Voucher {
 	private String id;
 	private String type;
 	private double value;
+
+	/**
+	 * Use to evaluate which types of drinks this voucher applies for.
+	 * <br>
+	 *  - For including drink types: <code>[vc,ft]</code>
+	 * <br>
+	 *  - For excluding drink types: <code>![vc,ft]</code>
+	 */
 	private String expression;
 	private List<VoucherRule> rules;
 

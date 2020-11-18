@@ -4,9 +4,6 @@ import java.util.List;
 
 public abstract class VoucherProcessor {
 
-	/**
-	 * Includes: [vc,ft] Excludes: ![vc,ft]
-	 */
 	protected VoucherChecker checker;
 
 	protected List<VoucherRuleChecker> ruleCheckers;
