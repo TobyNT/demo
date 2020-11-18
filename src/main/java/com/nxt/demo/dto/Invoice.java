@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Invoice {
-	// TODO: rename sum to subtotal
+	// TODO: Issue #2 Rename 'sum' to 'subtotal'
 	private double sum = 0;
 	private List<InvoiceItem> invoiceItems = new ArrayList<>();
 	private List<DiscountItem> discountItems = new ArrayList<>();
