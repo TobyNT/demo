@@ -5,7 +5,15 @@ public class MinInvoiceSumVoucherRuleChecker implements VoucherRuleChecker {
 	private double minimumValue;
 
 	public MinInvoiceSumVoucherRuleChecker(double value) {
-		this.minimumValue = value;
+		this.minimumValue = validateMinValue(value);
+	}
+
+	private double validateMinValue(double value) {
+		if (value < 0) {
+			throw new IllegalArgumentException("invalid min invoice value");
+		}
+
+		return value;
 	}
 
 	@Override
